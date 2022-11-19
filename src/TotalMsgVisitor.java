@@ -1,3 +1,6 @@
+/*
+    Visitor pattern, goes through all the user instances get counts from tweet histories
+ */
 public class TotalMsgVisitor implements Visitor
 {
     private int msgCounter = 0;

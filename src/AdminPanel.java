@@ -33,13 +33,18 @@ public class AdminPanel
         }
         return panelInstance;
     }
-
+    /*
+        Actual implementation of the admin panel including buttons, text fields, and lists
+     */
     private AdminPanel()
     {
         root = new Groups("root");
+
+        // Creating tree for the UI
         rootNode = new DefaultMutableTreeNode(root);
         jtree = new JTree(rootNode);
 
+        // For all the user UI that is being viewed having its key as the name and UserUI object as value
         userUIHashMap = new HashMap<>();
 
         JTextField userIDText = new JTextField();
@@ -58,6 +63,7 @@ public class AdminPanel
             }
         });
 
+
         JTextField groupIDText = new JTextField();
         groupIDText.setBounds(220, 60, 135, 50);
         groupIDText.setBackground(new Color(0xEBEBE3));
@@ -73,6 +79,7 @@ public class AdminPanel
                 groupIDText.setText(null);
             }
         });
+
 
         JButton userViewBtn = new JButton("Open User View");
         userViewBtn.setBounds(220, 110, 270, 50);
@@ -90,14 +97,12 @@ public class AdminPanel
                 else
                 {
                     Users viewing = (Users) selected().getUserObject();
-
                     UserUI userView = new UserUI(viewing, root, userUIHashMap);
-
                     userUIHashMap.put(viewing, userView);
                 }
             }
-
         });
+
 
         JButton showUserTotBtn = new JButton("Show User Total");
         showUserTotBtn.setBounds(220, 220, 135, 50);
@@ -184,7 +189,11 @@ public class AdminPanel
 
     }
 
-
+    /*
+        Adds user Check if it is a group that is being selected on the
+        Admin panel to be precise about where to add who. and adding it to
+        the tree model
+     */
     private void addUser(String newUserID)
     {
         if (newUserID.isEmpty())
@@ -216,6 +225,7 @@ public class AdminPanel
         }
     }
 
+
     private void addGroup(String newGroupID)
     {
         if (newGroupID.isEmpty())
@@ -245,6 +255,7 @@ public class AdminPanel
         }
     }
 
+    // Returns what is being selected as a Node
     public DefaultMutableTreeNode selected()
     {
         try {
@@ -261,6 +272,7 @@ public class AdminPanel
         JOptionPane.showMessageDialog(null, errorMSg, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
+    // Updates the UI when nodes(Group or User) are being added
     public void updateTree(DefaultMutableTreeNode nodeToAdd, DefaultMutableTreeNode parentNode)
     {
         DefaultTreeModel model = (DefaultTreeModel) jtree.getModel();

@@ -2,11 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
+/*
+    UserUI having buttons and text fields for Following user and uploading tweets.
+    Also has separate lists for its list of followings and list of tweets that are updated
+ */
 public class UserUI
 {
     private JFrame userFrame;
@@ -23,9 +24,11 @@ public class UserUI
 
         userFrame = new JFrame();
 
+        // List and Model for tweets
         tweetModel = new DefaultListModel();
         tweetList = new JList(tweetModel);
 
+        // List and model for followers
         followerModel = new DefaultListModel();
         followList = new JList(followerModel);
 
@@ -48,34 +51,31 @@ public class UserUI
                 if (!root.contains(followUser.getText()))
                 {
                     errorMsg("The User does not exist!");
-                    followUser.setText(null);
                 }
                 // if user is yourself send error
                 else if (viewingUser == aUser)
                 {
                     errorMsg("You cannot add yourself!" );
-                    followUser.setText(null);
                 }
                 else if (followUser.getText().isEmpty())
                 {
                     errorMsg("Text box is empty!");
-                    followUser.setText(null);
                 }
                 else
                 {
                     if (followerModel.contains(aUser))
                     {
                         errorMsg("You are already following that User!");
-                        followUser.setText(null);
                     }
                     else
                     {
+                        // If all the conditions have met the user follows, adds in to the list model, and
+                        // attach into the observer pattern
                         viewingUser.followUser(aUser);
                         followerModel.addElement(aUser);
                         aUser.attach(viewingUser);
                     }
                 }
-                // if the user exists follow
                 followUser.setText(null);
             }
         });
@@ -127,6 +127,10 @@ public class UserUI
         JOptionPane.showMessageDialog(null, errorMSg, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
+    /*
+        goes through all the User objects that has been opened and updates all the
+        trees individually including itself.
+     */
     public void updateTweets(String msg)
     {
         for (Map.Entry<Users, UserUI> entry : userUIHashMap.entrySet())

@@ -1,19 +1,22 @@
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+/*
+    User class containing Hashsets of followers avoiding any duplicates
+    tweet history for its own tweets and newsfeed for all the follower + self
+    It has visitor and observer pattern's functions implemented as well as
+    itself being the leaf node of a SysEntry Class.
+ */
 public class Users extends Subject implements SysEntry, Observer
 {
     private String userID;
     private HashSet<Users> followers = new HashSet<>();
     private List<String> tweetHistory = new ArrayList<>();
     private List<String> newsFeed = new ArrayList<>();
-    private DefaultListModel tweets = new DefaultListModel();
     public Users(String newName)
     {
         this.userID = newName;
-        System.out.println("User " + newName + " has been created");
     }
     public String getName()
     {
@@ -26,46 +29,29 @@ public class Users extends Subject implements SysEntry, Observer
     {
         visitor.visitUser(this);
     }
-    public HashSet<Users> getFollowers()
-    {
-        return followers;
-    }
 
     public void followUser(Users newUser)
     {
-        System.out.println(this.toString() + " added " + newUser.toString());
-        System.out.println(this.followers.toString());
         followers.add(newUser);
     }
 
     @Override
     public void update(Subject userSubject, String msg)
     {
-        System.out.println("Update visited");
         if (userSubject instanceof Users)
         {
-            System.out.println("newsfeed update");
-            System.out.println(((Users) userSubject).getName() + " : " + msg);
             this.newsFeed.add("---> " + ((Users)userSubject).getName() + " : " + msg);
         }
     }
 
-    public List<String> getNewsFeed()
-    {
-        return this.newsFeed;
-    }
     public String getLatestNewsFeed()
     {
         if(newsFeed.isEmpty())
         {
-            System.out.println("return null feed visited");
             return null;
         }
         else
         {
-            System.out.println(this.getName());
-            System.out.println("return latestest newsfeed visited");
-            System.out.println(newsFeed.get(newsFeed.size() - 1));
             return newsFeed.get(newsFeed.size() - 1);
         }
     }

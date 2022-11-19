@@ -1,3 +1,6 @@
+/*
+    Counts all the groups that has been created.
+ */
 public class GroupTotalVisitor implements Visitor
 {
     private int GroupCounter = 0;

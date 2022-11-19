@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 /*
@@ -9,14 +8,12 @@ import java.util.List;
  */
 public class Groups implements SysEntry
 {
-    private Groups parent;
     private String groupID;
     private List<SysEntry> entryList;
     public Groups(String newName)
     {
         this.groupID = newName;
         entryList = new ArrayList<>();
-        parent = this;
     }
 
     public String getName()
