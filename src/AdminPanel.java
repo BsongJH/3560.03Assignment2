@@ -5,9 +5,10 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.HashMap;
+/*
+AdminPanel creates and only allows to create 1 admin panel by using Singleton pattern
+ */
 public class AdminPanel
 {
     public static AdminPanel panelInstance;
@@ -15,8 +16,9 @@ public class AdminPanel
     private Groups root;
     private JTree jtree;
     private DefaultMutableTreeNode rootNode;
-    private List<UserUI> userUIList;
+    private HashMap<Users, UserUI> userUIHashMap;
 
+    // Creating a single panel instance
     public static AdminPanel getAdminPanel()
     {
         if (panelInstance == null)
@@ -38,7 +40,7 @@ public class AdminPanel
         rootNode = new DefaultMutableTreeNode(root);
         jtree = new JTree(rootNode);
 
-        userUIList = new ArrayList<>();
+        userUIHashMap = new HashMap<>();
 
         JTextField userIDText = new JTextField();
         userIDText.setBounds(220, 10, 135, 50);
@@ -89,10 +91,9 @@ public class AdminPanel
                 {
                     Users viewing = (Users) selected().getUserObject();
 
-                    UserUI userView = new UserUI(viewing, root, userUIList);
+                    UserUI userView = new UserUI(viewing, root, userUIHashMap);
 
-                    userUIList.add(userView);
-                    System.out.println(userUIList.toString());
+                    userUIHashMap.put(viewing, userView);
                 }
             }
 

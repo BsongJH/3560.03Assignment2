@@ -3,7 +3,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserUI
 {
@@ -12,18 +14,16 @@ public class UserUI
     private JList tweetList;
     private DefaultListModel tweetModel, followerModel;
     private Users viewingUser;
-    private List<UserUI> userUIList;
+    private HashMap<Users, UserUI> userUIHashMap;
 
-    public UserUI(Users userView, Groups root, List<UserUI> userUIList )
+    public UserUI(Users userView, Groups root, HashMap<Users, UserUI> uimap)
     {
         this.viewingUser = userView;
-
-        this.userUIList = userUIList;
+        this.userUIHashMap = uimap;
 
         userFrame = new JFrame();
 
         tweetModel = new DefaultListModel();
-
         tweetList = new JList(tweetModel);
 
         followerModel = new DefaultListModel();
@@ -51,7 +51,7 @@ public class UserUI
                     followUser.setText(null);
                 }
                 // if user is yourself send error
-                else if (userView == aUser)
+                else if (viewingUser == aUser)
                 {
                     errorMsg("You cannot add yourself!" );
                     followUser.setText(null);
@@ -70,9 +70,9 @@ public class UserUI
                     }
                     else
                     {
-                        userView.followUser(aUser);
+                        viewingUser.followUser(aUser);
                         followerModel.addElement(aUser);
-                        aUser.attach(userView);
+                        aUser.attach(viewingUser);
                     }
                 }
                 // if the user exists follow
@@ -93,32 +93,18 @@ public class UserUI
             {
                 if (tweetMsgTxt.getText().isEmpty())
                 {
-                    //errorMsg("You cannot post empty message!");
-                    tweetList.setModel(tweetModel);
+                    errorMsg("You cannot post empty message!");
                 }
                 else
                 {
-                    userView.tweet(tweetMsgTxt.getText());
-
-                    //tweetModel.add(0,userView.getLatestNewsFeed());
-                    //tweetModel.addElement(userView.getLatestNewsFeed());
-                    //updateTweets(userView.getLatestNewsFeed());
-                    //System.out.println(tweetModel);
-                    //tweetList.setModel(tweetModel);
-                    //System.out.println(tweetModel);
-                    addToModel();
-                    //tweetList.setModel(tweetModel);
-                    System.out.println(userUIList.toString());
-
-                    //tweetList.ensureIndexIsVisible(tweetModel.getSize());
+                    viewingUser.tweet(tweetMsgTxt.getText());
+                    updateTweets(viewingUser.getLatestNewsFeed());
                 }
                 tweetMsgTxt.setText(null);
             }
         });
-        //tweetList.setModel(tweetModel);
 
-
-        userFrame.setTitle(userView.toString() + "'s view'");
+        userFrame.setTitle(viewingUser.toString() + "'s view'");
         userFrame.setLayout(null);
         userFrame.setResizable(false);
         userFrame.setVisible(true);
@@ -143,19 +129,15 @@ public class UserUI
 
     public void updateTweets(String msg)
     {
-        for (UserUI openUIs : userUIList)
+        for (Map.Entry<Users, UserUI> entry : userUIHashMap.entrySet())
         {
-            openUIs.tweetModel.add(0, msg);
+            Users key = entry.getKey();
+            UserUI value = entry.getValue();
+            if (followerModel.contains(key) || key.equals(viewingUser))
+            {
+                value.tweetModel.add(0, msg);
+            }
         }
     }
 
-    private void addToModel()
-    {
-        tweetModel.clear();
-        for (String history : viewingUser.getNewsFeed())
-        {
-            updateTweets(history);
-        }
-        //tweetList.setModel(tweetModel);
-    }
 }

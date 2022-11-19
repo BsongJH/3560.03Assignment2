@@ -2,33 +2,35 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+/*
+    Composite pattern
+    Groups class implementing the SysEntry interface which it would be sharing the same
+    interface with User class. This will be the "container" of user and group classes.
+ */
 public class Groups implements SysEntry
 {
     private Groups parent;
     private String groupID;
     private List<SysEntry> entryList;
-    private HashSet<String> userID;
-
     public Groups(String newName)
     {
         this.groupID = newName;
         entryList = new ArrayList<>();
-        userID = new HashSet<>();
         parent = this;
-
-        System.out.println("Group: " + newName + " has been created");
     }
 
     public String getName()
     {
         return groupID;
     }
-    public String toString() { return "(Group) " + groupID; }
+    public String toString() { return "[Group] " + groupID; }
 
     public void addEntry(SysEntry newGroup)
     {
         this.entryList.add(newGroup);
     }
+
+    // Checks if the param String exists in the list of SysEntries that it carries
     public Boolean contains(String userID)
     {
         for (SysEntry entries : entryList)
@@ -50,6 +52,8 @@ public class Groups implements SysEntry
         }
         return false;
     }
+
+    // Similar to the .contain method but this returns the actual object.
     public SysEntry getEntry(String userID, SysEntry entry)
     {
         for (SysEntry entries : entryList)
@@ -71,12 +75,15 @@ public class Groups implements SysEntry
         }
         return null;
     }
-
-    // Loops until there are nothing on the list of entry (Root Group)
+/*
+    Loops until there are nothing on the list of entry (Root Group)
+    Accept method for the visitor method. Goes through all the
+    Entries that it carries and accepts.
+    Mostly for root group
+ */
     @Override
     public void accept(Visitor visitor)
     {
-        System.out.println("Group accept method visited!");
         visitor.visitGroup(this);
         for (SysEntry entries : entryList)
         {

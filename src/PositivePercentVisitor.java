@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+// Finds the percentage of the positive words in the total messages that has been sent by users
 public class PositivePercentVisitor implements Visitor
 {
     private double percentage = 0;
@@ -10,6 +11,8 @@ public class PositivePercentVisitor implements Visitor
     private List<String> positiveWords = new ArrayList<>(Arrays.asList("good",
             "lit","nice","great","excellent"));
 
+    // Visitor pattern of User class it goes through all the tweet histories and compare
+    // it with the list that I assigned.
     @Override
     public void visitUser(Users visitUsers)
     {
@@ -33,6 +36,7 @@ public class PositivePercentVisitor implements Visitor
         // Nothing here
     }
 
+    // Calculates the positive message percentage
     public double getPercentage()
     {
         if (allMsg == 0)
