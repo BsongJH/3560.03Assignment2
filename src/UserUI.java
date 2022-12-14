@@ -13,27 +13,22 @@ public class UserUI
     private JFrame userFrame;
     private JList followList;
     private JList tweetList;
-    private DefaultListModel tweetModel, followerModel;
     private Users viewingUser;
-    private HashMap<Users, UserUI> userUIHashMap;
+    private JLabel creationF1, creationT1, creationF2,creationT2;
+    private JPanel followP1, tweetP1, followP2, tweetP2;
 
-    public UserUI(Users userView, Groups root, HashMap<Users, UserUI> uimap)
+    public UserUI(Users userView, Groups root)
     {
         this.viewingUser = userView;
-        this.userUIHashMap = uimap;
 
         userFrame = new JFrame();
+        LastUpdateVisitor updateVisitor = new LastUpdateVisitor();
 
-        // List and Model for tweets
-        tweetModel = new DefaultListModel();
-        tweetList = new JList(tweetModel);
+        tweetList = new JList(userView.getTweetModel());
+        followList = new JList(userView.getFollowModel());
 
-        // List and model for followers
-        followerModel = new DefaultListModel();
-        followList = new JList(followerModel);
-
-        followList.setBounds(13,60,395, 100);
-        tweetList.setBounds(13,210,395, 120);
+        followList.setBounds(13,80,395, 80);
+        tweetList.setBounds(13,230,395, 100);
 
         JTextField followUser = new JTextField();
         followUser.setBounds(10, 10, 200, 50);
@@ -46,7 +41,7 @@ public class UserUI
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                Users aUser = (Users) root.getEntry(followUser.getText(), root);
+                Users aUser = (Users) root.getEntry(followUser.getText());
                 // if user does not exists sent error.
                 if (!root.contains(followUser.getText()))
                 {
@@ -62,8 +57,8 @@ public class UserUI
                     errorMsg("Text box is empty!");
                 }
                 else
-                {
-                    if (followerModel.contains(aUser))
+                {       //followerModel.contains(aUser)
+                    if (userView.getFollowModel().contains(aUser))
                     {
                         errorMsg("You are already following that User!");
                     }
@@ -72,7 +67,6 @@ public class UserUI
                         // If all the conditions have met the user follows, adds in to the list model, and
                         // attach into the observer pattern
                         viewingUser.followUser(aUser);
-                        followerModel.addElement(aUser);
                         aUser.attach(viewingUser);
                     }
                 }
@@ -98,7 +92,8 @@ public class UserUI
                 else
                 {
                     viewingUser.tweet(tweetMsgTxt.getText());
-                    updateTweets(viewingUser.getLatestNewsFeed());
+                    root.accept(updateVisitor);
+                    creationT2.setText("Last Updated Time: " + updateVisitor.getLastUpdatedTime());
                 }
                 tweetMsgTxt.setText(null);
             }
@@ -113,6 +108,48 @@ public class UserUI
         userFrame.setLocationRelativeTo(null);
         userFrame.getContentPane().setBackground(new Color(0xC7D6DB));
 
+        creationF1 = new JLabel();
+        creationF2 = new JLabel();
+        creationT1 = new JLabel();
+        creationT2 = new JLabel();
+
+        creationT1.setForeground(Color.BLACK);
+        creationF1.setForeground(Color.BLACK);
+        creationT2.setForeground(Color.BLACK);
+        creationF2.setForeground(Color.BLACK);
+
+        creationF1.setText("Current Following:   ");
+        creationF2.setText("Creation Time: " + viewingUser.getCreationTime());
+
+        creationT1.setText("News Feed:        ");
+        creationT2.setText("Last Updated Time: " + updateVisitor.getLastUpdatedTime());
+        root.accept(updateVisitor);
+        creationT2.setText("Last Updated Time: " + updateVisitor.getLastUpdatedTime());
+
+        followP1 = new JPanel();
+        tweetP1 = new JPanel();
+        followP2 = new JPanel();
+        tweetP2 = new JPanel();
+
+        followP1.setBackground(new Color(0xC7D6DB));
+        followP1.setBounds(13,60,150,20);
+        followP2.setBackground(new Color(0xC7D6DB));
+        followP2.setBounds(163,60,245,20);
+
+        tweetP1.setBackground(new Color(0xC7D6DB));
+        tweetP1.setBounds(13,210,150, 20);
+        tweetP2.setBackground(new Color(0xC7D6DB));
+        tweetP2.setBounds(163,210,245, 20);
+
+        followP1.add(creationF1);
+        tweetP1.add(creationT1);
+        followP2.add(creationF2);
+        tweetP2.add(creationT2);
+
+        userFrame.add(followP1);
+        userFrame.add(tweetP1);
+        userFrame.add(followP2);
+        userFrame.add(tweetP2);
         userFrame.add(followUserBtn);
         userFrame.add(followUser);
         userFrame.add(tweetMsgTxt);
@@ -125,23 +162,6 @@ public class UserUI
     private void errorMsg(String errorMSg)
     {
         JOptionPane.showMessageDialog(null, errorMSg, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    /*
-        goes through all the User objects that has been opened and updates all the
-        trees individually including itself.
-     */
-    public void updateTweets(String msg)
-    {
-        for (Map.Entry<Users, UserUI> entry : userUIHashMap.entrySet())
-        {
-            Users key = entry.getKey();
-            UserUI value = entry.getValue();
-            if (followerModel.contains(key) || key.equals(viewingUser))
-            {
-                value.tweetModel.add(0, msg);
-            }
-        }
     }
 
 }

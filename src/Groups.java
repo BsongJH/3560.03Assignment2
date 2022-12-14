@@ -10,10 +10,13 @@ public class Groups implements SysEntry
 {
     private String groupID;
     private List<SysEntry> entryList;
+    private long creationTime;
+    private long lastUpdated = 0;
     public Groups(String newName)
     {
         this.groupID = newName;
         entryList = new ArrayList<>();
+        this.creationTime = System.currentTimeMillis();
     }
 
     public String getName()
@@ -51,7 +54,7 @@ public class Groups implements SysEntry
     }
 
     // Similar to the .contain method but this returns the actual object.
-    public SysEntry getEntry(String userID, SysEntry entry)
+    public SysEntry getEntry(String userID)
     {
         for (SysEntry entries : entryList)
         {
@@ -66,11 +69,23 @@ public class Groups implements SysEntry
             {
                 if (((Groups) entries).contains(userID))
                 {
-                    getEntry(userID, entries);
+                    if (((Groups) entries).getEntry(userID) instanceof Users)
+                    {
+                        return ((Groups) entries).getEntry(userID);
+                    }
                 }
             }
         }
         return null;
+    }
+
+    public long getCreationTime()
+    {
+        return creationTime;
+    }
+    public long getLastUpdated()
+    {
+        return lastUpdated;
     }
 /*
     Loops until there are nothing on the list of entry (Root Group)

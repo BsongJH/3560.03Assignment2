@@ -16,7 +16,8 @@ public class AdminPanel
     private Groups root;
     private JTree jtree;
     private DefaultMutableTreeNode rootNode;
-    private HashMap<Users, UserUI> userUIHashMap;
+    private JLabel creationTime;
+    private JPanel top;
 
     // Creating a single panel instance
     public static AdminPanel getAdminPanel()
@@ -45,7 +46,6 @@ public class AdminPanel
         jtree = new JTree(rootNode);
 
         // For all the user UI that is being viewed having its key as the name and UserUI object as value
-        userUIHashMap = new HashMap<>();
 
         JTextField userIDText = new JTextField();
         userIDText.setBounds(220, 10, 135, 50);
@@ -97,15 +97,14 @@ public class AdminPanel
                 else
                 {
                     Users viewing = (Users) selected().getUserObject();
-                    UserUI userView = new UserUI(viewing, root, userUIHashMap);
-                    userUIHashMap.put(viewing, userView);
+                    UserUI userView = new UserUI(viewing, root);
                 }
             }
         });
 
 
         JButton showUserTotBtn = new JButton("Show User Total");
-        showUserTotBtn.setBounds(220, 220, 135, 50);
+        showUserTotBtn.setBounds(220, 215, 135, 50);
         showUserTotBtn.addActionListener(new ActionListener()
         {
             @Override
@@ -118,7 +117,7 @@ public class AdminPanel
         });
 
         JButton showGroupTotBtn = new JButton("Show Group Total");
-        showGroupTotBtn.setBounds(355, 220, 135, 50);
+        showGroupTotBtn.setBounds(355, 215, 135, 50);
         showGroupTotBtn.addActionListener(new ActionListener()
         {
             @Override
@@ -131,7 +130,7 @@ public class AdminPanel
         });
 
         JButton showTotMsgBtn = new JButton("Total Messages");
-        showTotMsgBtn.setBounds(220, 270, 135, 50);
+        showTotMsgBtn.setBounds(220, 265, 135, 50);
         showTotMsgBtn.addActionListener(new ActionListener()
         {
             @Override
@@ -144,7 +143,7 @@ public class AdminPanel
         });
 
         JButton showPosPerBtn = new JButton("Positive Percentage");
-        showPosPerBtn.setBounds(355, 270, 135, 50);
+        showPosPerBtn.setBounds(355, 265, 135, 50);
         showPosPerBtn.addActionListener(new ActionListener()
         {
             @Override
@@ -157,9 +156,54 @@ public class AdminPanel
             }
         });
 
+        JButton showIDVerificationBtn = new JButton("ID Verification");
+        showIDVerificationBtn.setBounds(220,315,135,50);
+        showIDVerificationBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                ValidIDVisitor validCheck = new ValidIDVisitor();
+                if(userIDText.getText().isEmpty())
+                {
+                    validCheck.setTempName(groupIDText.getText());
+                }
+                else
+                {
+                    validCheck.setTempName(userIDText.getText());
+                }
+                root.accept(validCheck);
+                if(validCheck.getExist())
+                {
+                    errorMsg("The name already exists!");
+                }
+                else
+                {
+                    display("The name does not exist!");
+                }
+                userIDText.setText(null);
+                groupIDText.setText(null);
+            }
+        });
+
+        JButton showLastUpdateUserBtn = new JButton("Last Updated");
+        showLastUpdateUserBtn.setBounds(355,315,135,50);
+        showLastUpdateUserBtn.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                LastUpdateVisitor lastUpdateVisitor = new LastUpdateVisitor();
+                root.accept(lastUpdateVisitor);
+                display("The User: " + lastUpdateVisitor.getLastUpdateUser()
+                        + " at " + lastUpdateVisitor.getLastUpdatedTime());
+            }
+        });
+
+
 
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(10, 10, 200, 320);
+        scrollPane.setBounds(10, 10, 200, 360);
         scrollPane.setBackground(new Color(0xEBEBE3));
         scrollPane.setViewportView(jtree);
 
@@ -168,10 +212,18 @@ public class AdminPanel
         frame.setLayout(null);
         frame.setResizable(false);
         frame.setVisible(true);
-        frame.setPreferredSize(new Dimension(500, 500 / 12 * 9));
-        frame.setSize(500, 500 / 12 * 9);
+        frame.setPreferredSize(new Dimension(500, 550 / 12 * 9));
+        frame.setSize(500, 550 / 12 * 9);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        creationTime = new JLabel();
+        top = new JPanel();
+        creationTime.setForeground(Color.BLACK);
+        top.setBackground(new Color(0xC7D6DB));
+        top.setBounds(220,160,270,50);
+        top.add(creationTime);
+        frame.add(top);
 
         frame.add(addUserBtn);
         frame.add(userIDText);
@@ -184,6 +236,8 @@ public class AdminPanel
         frame.add(showTotMsgBtn);
         frame.add(showPosPerBtn);
         frame.add(scrollPane);
+        frame.add(showIDVerificationBtn);
+        frame.add(showLastUpdateUserBtn);
 
         frame.getContentPane().setBackground(new Color(0xC7D6DB));
 
@@ -210,6 +264,8 @@ public class AdminPanel
                 // Creates new User adds it to the group
                 Users addUser = new Users(newUserID);
                 parentGroup.addEntry(addUser);
+                //displayLabel("New user creation time: " + addUser.getCreationTime());
+                creationTime.setText("New user creation time: " + addUser.getCreationTime());
 
                 DefaultMutableTreeNode newUserNode = new DefaultMutableTreeNode(addUser);
                 updateTree(newUserNode, parentNode);
@@ -240,7 +296,8 @@ public class AdminPanel
                 Groups parentGroup = (Groups) parentNode.getUserObject();
                 Groups newGroup = new Groups(newGroupID);
                 parentGroup.addEntry(newGroup);
-
+                //displayLabel("New group creation time: " + newGroup.getCreationTime());
+                creationTime.setText("New group creation time: " + newGroup.getCreationTime());
                 DefaultMutableTreeNode newGroupNode = new DefaultMutableTreeNode(newGroup);
                 updateTree(newGroupNode, parentNode);
             }
@@ -284,4 +341,5 @@ public class AdminPanel
     {
         JOptionPane.showMessageDialog(null, message, "Analysis", JOptionPane.INFORMATION_MESSAGE);
     }
+
 }
