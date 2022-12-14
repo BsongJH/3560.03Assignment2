@@ -18,11 +18,12 @@ public class Users extends Subject implements SysEntry, Observer
     private DefaultListModel followModel = new DefaultListModel();
     private DefaultListModel tweetModel = new DefaultListModel();
     private long creationTime;
-    private long lastUpdated = 0;
+    private long lastUpdated;
     public Users(String newName)
     {
         this.userID = newName;
         this.creationTime = System.currentTimeMillis();
+        this.lastUpdated = System.currentTimeMillis();
     }
     public long getLastUpdated()
     {
@@ -65,7 +66,7 @@ public class Users extends Subject implements SysEntry, Observer
     {
         if (userSubject instanceof Users)
         {
-            //lastUpdated = System.currentTimeMillis();
+            lastUpdated = System.currentTimeMillis();
             this.newsFeed.add("Last updated: " + (((Users) userSubject).getLastUpdated()));
             tweetModel.add(0, "Last updated: " + ((Users) userSubject).getLastUpdated());
             this.newsFeed.add("--> " + ((Users)userSubject).getName() + " : " + msg);

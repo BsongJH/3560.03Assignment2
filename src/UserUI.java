@@ -22,7 +22,6 @@ public class UserUI
         this.viewingUser = userView;
 
         userFrame = new JFrame();
-        LastUpdateVisitor updateVisitor = new LastUpdateVisitor();
 
         tweetList = new JList(userView.getTweetModel());
         followList = new JList(userView.getFollowModel());
@@ -92,8 +91,9 @@ public class UserUI
                 else
                 {
                     viewingUser.tweet(tweetMsgTxt.getText());
-                    root.accept(updateVisitor);
-                    creationT2.setText("Last Updated Time: " + updateVisitor.getLastUpdatedTime());
+
+                    creationT2.setText("Last Updated Time: " + viewingUser.getLastUpdated());
+                    userFrame.update(userFrame.getGraphics());
                 }
                 tweetMsgTxt.setText(null);
             }
@@ -118,13 +118,12 @@ public class UserUI
         creationT2.setForeground(Color.BLACK);
         creationF2.setForeground(Color.BLACK);
 
-        creationF1.setText("Current Following:   ");
+        creationF1.setText("Current Following:      ");
         creationF2.setText("Creation Time: " + viewingUser.getCreationTime());
 
-        creationT1.setText("News Feed:        ");
-        creationT2.setText("Last Updated Time: " + updateVisitor.getLastUpdatedTime());
-        root.accept(updateVisitor);
-        creationT2.setText("Last Updated Time: " + updateVisitor.getLastUpdatedTime());
+        creationT1.setText("News Feed:              ");
+        creationT2.setText("Last Updated Time: " + viewingUser.getLastUpdated());
+        userFrame.update(userFrame.getGraphics());
 
         followP1 = new JPanel();
         tweetP1 = new JPanel();
